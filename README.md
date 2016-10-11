@@ -1,2 +1,2 @@
-# KituraBotMessageStorage
-Swift Kitura Message Storage for KituraBot framework
+# KituraBotMessageStore
+Swift Kitura In Memory Message Store for KituraBot framework
