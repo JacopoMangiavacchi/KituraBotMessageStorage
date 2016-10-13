@@ -20,19 +20,40 @@ import LoggerAPI
 /// Warning: it do not scale on different frontend deployment
 public class KituraBotMessageStoreInMemory : KituraBotMessageStoreProtocol {
     private var messageStoreDictionary: [String : KituraBotMessage]
+    private var lastMessageIdPerUserDictionary: [String : String]  // channel+userId : messageId
 
+    
     //TODO: Add parameter for Message Store
     public init() {
         messageStoreDictionary = [String : KituraBotMessage]()
+        lastMessageIdPerUserDictionary = [String : String]()
     }
 
     public func addMessage(_ message: KituraBotMessage) {
         log(message)
         messageStoreDictionary[message.messageId] = message
+        
+        lastMessageIdPerUserDictionary[message.user.channel + message.user.userId] = message.messageId
     }
 
     public func getMessage(messageId: String) -> KituraBotMessage? {
         return messageStoreDictionary[messageId]
+    }
+    
+    public func getLastMessageForUser(_ user: KituraBotUser) -> KituraBotMessage? {
+        if let messageId = lastMessageIdPerUserDictionary[user.channel + user.userId] {
+            return messageStoreDictionary[messageId]
+        }
+        
+        return nil
+    }
+
+    
+    
+    public func resetLastMessageForUser(_ user: KituraBotUser) {
+        if let messageId = lastMessageIdPerUserDictionary[user.channel + user.userId] {
+            lastMessageIdPerUserDictionary[messageId] = nil
+        }
     }
 
     public func getMessageAll(user: KituraBotUser) -> [KituraBotMessage] {
@@ -83,5 +104,6 @@ public class KituraBotMessageStoreInMemory : KituraBotMessageStoreProtocol {
         }
     }
 }
+
 
 
